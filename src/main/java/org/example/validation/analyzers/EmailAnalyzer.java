@@ -6,8 +6,6 @@ import org.example.validation.util.CustomException;
 import org.example.validation.util.ValidationResult;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * this analyzer will check email validity.
@@ -48,77 +46,33 @@ public class EmailAnalyzer implements AnnotationAnalyzer{
 
         field.setAccessible(true);
 
+        String email;
+        int temp = result.getErrors().size();
+
         try {
 
             if (field.get(obj) == null) throw new NullPointerException();
 
-            if (field.get(obj) instanceof Collection<?>) {
+            Email annotation = field.getAnnotation(Email.class);
 
-                int temp = result.getErrors().size();
+            Object[] objects = convert(field, obj, annotation.mapTarget());
 
-                Collection<?> collection = (Collection<?>) field.get(obj);
-                Object[] o = collection.toArray();
-                recursive(o, field.getName());
+            if (objects != null) {
 
-                if (temp != result.getErrors().size()) throw new CustomException();
-
-                return true;
-
-            } else if (field.getType().toString().contains("[")) {
-
-                int temp = result.getErrors().size();
-
-                Object[] objects = (Object[]) field.get(obj);
                 recursive(objects, field.getName());
+                return temp == result.getErrors().size();
 
-                if (temp != result.getErrors().size()) throw new CustomException();
-
-                return true;
-
-            } else if (field.get(obj) instanceof Map) {
-
-                Email annotation = field.getAnnotation(Email.class);
-                int temp = result.getErrors().size();
-
-                switch (annotation.mapTarget()) {
-
-                    case KEYS:
-
-                        Map<?, ?> map = (Map<?, ?>) field.get(obj);
-                        Object[] o = map.keySet().toArray();
-                        recursive(o, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        return true;
-
-                    case VALUES:
-
-                        Map<?, ?> map2 = (Map<?, ?>) field.get(obj);
-                        Object[] objects = map2.values().toArray();
-                        recursive(objects, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        return true;
-                }
+            } else {
+                email = (String) field.get(obj);
             }
 
-            String email = (String) field.get(obj);
-
+            if (email == null) throw new NullPointerException();
             if (!email.matches(regex)) throw new CustomException();
 
 
-        } catch (CustomException | ClassCastException e) {
+        } catch (CustomException | ClassCastException | NullPointerException e) {
 
             result.addError(printPlace(field, obj), "Doesn't match annotation @Email");
-
-            return false;
-
-        } catch (NullPointerException e) {
-
-            result.addError(printPlace(field, obj), "Doesn't match annotation @Email " +
-                    "because it is null");
 
             return false;
 
@@ -138,7 +92,7 @@ public class EmailAnalyzer implements AnnotationAnalyzer{
     @Override
     public void recursive(Object[] array, String name) {
 
-        String place = "Field: " + name + " element #" + countIndex;
+        String place = "Field: " + name + " element #" + countIndex + " ";
         String msg = "is not email";
         boolean res = false;
 
@@ -161,22 +115,6 @@ public class EmailAnalyzer implements AnnotationAnalyzer{
         System.arraycopy(array, 1, temp, 0, temp.length);
 
         recursive(temp, name);
-
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        return obj instanceof EmailAnalyzer;
-    }
-
-    @Override
-    public int hashCode() {
-
-        final int PRIME = 32;
-        int result = 1;
-
-        return result * PRIME;
 
     }
 }

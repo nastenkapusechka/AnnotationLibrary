@@ -9,9 +9,6 @@ import org.example.validation.util.ValidationResult;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Map;
-
 /**
  * The class checks if the annotated field
  * is thread safe
@@ -43,6 +40,9 @@ public class ThreadSafeAnalyzer implements AnnotationAnalyzer{
         if (f == null || obj == null) return false;
 
         this.field = f;
+        int temp = result.getErrors().size();
+        boolean res;
+
         field.setAccessible(true);
 
 
@@ -58,69 +58,26 @@ public class ThreadSafeAnalyzer implements AnnotationAnalyzer{
 
             if (a.threadTarget() == ThreadTarget.ONLY_FIELD) return true;
 
-            if (field.get(obj) instanceof Collection<?>) {
+            Object[] objects = convert(field, obj, a.mapTarget());
 
-                int temp = result.getErrors().size();
+            if (objects != null) {
 
-                Collection<?> collection = (Collection<?>) field.get(obj);
-                Object[] o = collection.toArray();
-                recursive(o, field.getName());
-
-                if (temp != result.getErrors().size()) throw new CustomException();
-
-            } else if (field.getType().toString().contains("[")) {
-
-                int temp = result.getErrors().size();
-
-                Object[] objects = (Object[]) field.get(obj);
                 recursive(objects, field.getName());
+                res = temp == result.getErrors().size();
 
-                if (temp != result.getErrors().size()) throw new CustomException();
+            } else throw new CustomException();
 
-            } else if (field.get(obj) instanceof Map) {
+            if (!res) throw new CustomException();
 
-                ThreadSafe annotation = field.getAnnotation(ThreadSafe.class);
-                int temp = result.getErrors().size();
-
-                switch (annotation.mapTarget()) {
-
-                    case KEYS:
-
-                        Map<?, ?> map = (Map<?, ?>) field.get(obj);
-                        Object[] o = map.keySet().toArray();
-                        recursive(o, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        break;
-
-                    case VALUES:
-
-                        Map<?, ?> map2 = (Map<?, ?>) field.get(obj);
-                        Object[] objects = map2.values().toArray();
-                        recursive(objects, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        break;
-                }
-            }
-
-        } catch (CustomException e) {
+        } catch (CustomException | NullPointerException e) {
 
             result.addError(printPlace(field, obj), "Doesn't match annotation @ThreadSafe");
 
             return false;
 
-        } catch (NullPointerException e) {
-
-            result.addError(printPlace(field, obj), "Doesn't match annotation @ThreadSafe " +
-                    "because it is null");
-
-            return false;
-
-        } catch (Exception e) {
+        }  catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
 
         return true;
@@ -168,22 +125,6 @@ public class ThreadSafeAnalyzer implements AnnotationAnalyzer{
         return path.contains("concurrent") ||
                 Modifier.isSynchronized(fieldModifiers) ||
                 Modifier.isVolatile(fieldModifiers);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        return obj instanceof ThreadSafeAnalyzer;
-    }
-
-    @Override
-    public int hashCode() {
-
-        final int PRIME = 36;
-        int result = 1;
-
-        return result * PRIME;
-
     }
 
 }

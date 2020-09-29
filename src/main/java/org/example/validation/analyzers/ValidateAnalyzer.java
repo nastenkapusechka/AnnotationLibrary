@@ -4,11 +4,9 @@ package org.example.validation.analyzers;
 import org.example.validation.Validator;
 import org.example.validation.annotaions.Validate;
 import org.example.validation.util.AnnotationName;
-import org.example.validation.util.CustomException;
 import org.example.validation.util.ValidationResult;
 
 import java.lang.reflect.Field;
-import java.util.*;
 
 /**
  *
@@ -45,52 +43,20 @@ public class ValidateAnalyzer implements AnnotationAnalyzer{
 
             int temp = result.getErrors().size();
 
-            if (field.get(obj) instanceof Collection<?>) {
+            Validate annotation = field.getAnnotation(Validate.class);
 
-                Collection<?> collection = (Collection<?>) field.get(obj);
-                Object[] o = collection.toArray();
-                recursive(o, field.getName());
+            Object[] objects = convert(field, obj, annotation.mapTarget());
 
-                return temp == result.getErrors().size();
+            if (objects != null) {
 
-            } else if (field.getType().toString().contains("[")) {
-
-                Object[] objects = (Object[]) field.get(obj);
                 recursive(objects, field.getName());
 
-                return temp == result.getErrors().size();
+            } else {
 
-            } else if (field.get(obj) instanceof Map) {
+                Object any = field.get(obj);
+                Validator.validate(any);
 
-                Validate annotation = field.getAnnotation(Validate.class);
-
-                switch (annotation.mapTarget()) {
-
-                    case KEYS:
-
-                        Map<?, ?> map = (Map<?, ?>) field.get(obj);
-                        Object[] o = map.keySet().toArray();
-                        recursive(o, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        return true;
-
-                    case VALUES:
-
-                        Map<?, ?> map2 = (Map<?, ?>) field.get(obj);
-                        Object[] objects = map2.values().toArray();
-                        recursive(objects, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        return true;
-                }
             }
-
-            Object any = field.get(obj);
-
-            Validator.validate(any);
 
             // If errors are added while the program is running, we notice this.
             return temp == result.getErrors().size();

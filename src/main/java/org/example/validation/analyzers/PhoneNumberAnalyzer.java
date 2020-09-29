@@ -7,8 +7,6 @@ import org.example.validation.util.CustomException;
 import org.example.validation.util.ValidationResult;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * The analyzer checks the validity of the
@@ -36,87 +34,43 @@ public class PhoneNumberAnalyzer implements AnnotationAnalyzer{
 
         if (field == null || obj == null) return false;
 
+        field.setAccessible(true);
+
+        int temp = result.getErrors().size();
+        String number;
+        Object[] objects;
+        boolean res = false;
+
         try {
 
             if (field.get(obj) == null) throw new NullPointerException();
 
-            if (field.get(obj) instanceof Collection<?>) {
+            PhoneNumber annotation = field.getAnnotation(PhoneNumber.class);
 
-                int temp = result.getErrors().size();
+            objects = convert(field, obj, annotation.mapTarget());
 
-                Collection<?> collection = (Collection<?>) field.get(obj);
-                Object[] o = collection.toArray();
-                recursive(o, field.getName());
+            if (objects != null) {
 
-                if (temp != result.getErrors().size()) throw new CustomException();
-
-                return true;
-
-            } else if (field.getType().toString().contains("[")) {
-
-                int temp = result.getErrors().size();
-
-                Object[] objects = (Object[]) field.get(obj);
                 recursive(objects, field.getName());
+                res = temp == result.getErrors().size();
 
-                if (temp != result.getErrors().size()) throw new CustomException();
-
-                return true;
-
-            } else if (field.get(obj) instanceof Map) {
-
-                PhoneNumber annotation = field.getAnnotation(PhoneNumber.class);
-                int temp = result.getErrors().size();
-
-                switch (annotation.mapTarget()) {
-
-                    case KEYS:
-
-                        Map<?, ?> map = (Map<?, ?>) field.get(obj);
-                        Object[] o = map.keySet().toArray();
-                        recursive(o, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        return true;
-
-                    case VALUES:
-
-                        Map<?, ?> map2 = (Map<?, ?>) field.get(obj);
-                        Object[] objects = map2.values().toArray();
-                        recursive(objects, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        return true;
-                }
-            }
-
-            String number;
-
-            if (field.get(obj) instanceof String) {
+            } else if (field.get(obj) instanceof String) {
 
                 number = (String) field.get(obj);
-                if (!check(number)) throw new CustomException();
+                res = check(number);
 
             } else if (field.get(obj) instanceof Number) {
 
                 number = String.valueOf(field.get(obj));
-                if (!check(number)) throw new CustomException();
+                res = check(number);
 
-            } else throw new CustomException();
+            }
 
+            if (!res) throw new CustomException();
 
-        } catch (CustomException | ClassCastException e) {
+        } catch (CustomException | ClassCastException | NullPointerException e) {
 
             result.addError(printPlace(field, obj), "Doesn't match annotation @PhoneNumber");
-
-            return false;
-
-        } catch (NullPointerException e) {
-
-            result.addError(printPlace(field, obj), "Doesn't match annotation @PhoneNumber " +
-                    "because it is null");
 
             return false;
 
@@ -181,21 +135,5 @@ public class PhoneNumberAnalyzer implements AnnotationAnalyzer{
         String pattern = "^(\\s*)?(\\+)?([- _():=+]?\\d[- _():=+]?){10,14}(\\s*)?$";
 
         return number.matches(pattern);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        return obj instanceof PhoneNumberAnalyzer;
-    }
-
-    @Override
-    public int hashCode() {
-
-        final int PRIME = 35;
-        int result = 1;
-
-        return result * PRIME;
-
     }
 }
