@@ -6,8 +6,6 @@ import org.example.validation.util.CustomException;
 import org.example.validation.util.ValidationResult;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
 
 
 /**
@@ -65,91 +63,45 @@ public class CardNumberAnalyzer implements AnnotationAnalyzer{
         field.setAccessible(true);
 
         String cardNumber;
-        boolean res = false;
+        boolean res;
+        int temp = result.getErrors().size();
 
         try {
 
             if (field.get(obj) == null) throw new NullPointerException();
 
-            if (field.get(obj) instanceof Collection<?>) {
+            CardNumber annotation = field.getDeclaredAnnotation(CardNumber.class);
 
-                int temp = result.getErrors().size();
+            Object[] objects = convert(field, obj, annotation.mapTarget());
 
-                Collection<?> collection = (Collection<?>) field.get(obj);
-                Object[] o = collection.toArray();
-                recursive(o, field.getName());
+            if (objects != null) {
 
-                if (temp != result.getErrors().size()) throw new CustomException();
-
-                return true;
-
-            } else if (field.getType().toString().contains("[")) {
-
-                int temp = result.getErrors().size();
-
-                Object[] objects = (Object[]) field.get(obj);
                 recursive(objects, field.getName());
-
-                if (temp != result.getErrors().size()) throw new CustomException();
-
-                return true;
+                res = temp == result.getErrors().size();
 
             } else if (field.get(obj) instanceof String) {
 
                 cardNumber = (String) field.get(obj);
                 res = check(cardNumber);
 
-            } else if (field.get(obj) instanceof Number) {
+            } else {
 
                 cardNumber = String.valueOf(field.get(obj));
                 res = check(cardNumber);
 
-            } else if (field.get(obj) instanceof Map) {
-
-                CardNumber annotation = field.getAnnotation(CardNumber.class);
-                int temp = result.getErrors().size();
-
-                switch (annotation.mapTarget()) {
-
-                    case KEYS:
-
-                        Map<?, ?> map = (Map<?, ?>) field.get(obj);
-                        Object[] o = map.keySet().toArray();
-                        recursive(o, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        return true;
-
-                    case VALUES:
-
-                        Map<?, ?> map2 = (Map<?, ?>) field.get(obj);
-                        Object[] objects = map2.values().toArray();
-                        recursive(objects, field.getName());
-
-                        if (temp != result.getErrors().size()) throw new CustomException();
-
-                        return true;
-                }
             }
 
             if (!res) throw new CustomException();
 
-        } catch (CustomException | ClassCastException e) {
+        } catch (CustomException | ClassCastException | NullPointerException e) {
 
             result.addError(printPlace(field, obj), "Doesn't match annotation @CardNumber");
 
             return false;
 
-        } catch (NullPointerException e) {
-
-            result.addError(printPlace(field, obj), "Doesn't match annotation @CardNumber " +
-                    "because it is null");
-
-            return false;
-
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+            return false;
         }
 
         return true;
@@ -224,19 +176,4 @@ public class CardNumberAnalyzer implements AnnotationAnalyzer{
         return algorithmLuna(numbers);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-
-        return obj instanceof CardNumberAnalyzer;
-    }
-
-    @Override
-    public int hashCode() {
-
-        final int PRIME = 31;
-        int result = 1;
-
-        return result * PRIME;
-
-    }
 }

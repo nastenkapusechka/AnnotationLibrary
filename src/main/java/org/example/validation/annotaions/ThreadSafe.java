@@ -15,5 +15,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface ThreadSafe {
     MapTarget mapTarget() default MapTarget.UNKNOWN;
-    ThreadTarget target() default ThreadTarget.ONLY_FIELD;
+    ThreadTarget threadTarget() default ThreadTarget.ONLY_FIELD;
 }

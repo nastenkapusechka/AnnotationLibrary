@@ -56,7 +56,7 @@ public class ThreadSafeAnalyzer implements AnnotationAnalyzer{
 
             ThreadSafe a = field.getAnnotation(ThreadSafe.class);
 
-            if (a.target() == ThreadTarget.ONLY_FIELD) return true;
+            if (a.threadTarget() == ThreadTarget.ONLY_FIELD) return true;
 
             if (field.get(obj) instanceof Collection<?>) {
 

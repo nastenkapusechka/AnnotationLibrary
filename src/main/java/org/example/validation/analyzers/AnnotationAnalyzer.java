@@ -1,6 +1,15 @@
 package org.example.validation.analyzers;
 
+import org.example.validation.util.CustomException;
+import org.example.validation.util.MapTarget;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Map;
+
+import static org.example.validation.util.MapTarget.KEYS;
+import static org.example.validation.util.MapTarget.VALUES;
 
 /**
  * This interface will be implemented by annotation parsers.
@@ -35,8 +44,46 @@ public interface AnnotationAnalyzer {
      */
     void recursive(Object[] array, String place);
 
+    default Object[] convert (Field field, Object o, MapTarget target) {
 
-    /**
+        try {
+
+            if (field.get(o) instanceof Collection<?>) {
+
+                Collection<?> collection = (Collection<?>) field.get(o);
+                return collection.toArray();
+
+            } else if (field.getType().toString().contains("[")) {
+
+                return  (Object[]) field.get(o);
+
+            } else if (field.get(o) instanceof Map) {
+
+                switch (target) {
+
+                    case KEYS:
+
+                        Map<?, ?> map = (Map<?, ?>) field.get(o);
+                        return map.keySet().toArray();
+
+
+                    case VALUES:
+
+                        Map<?, ?> map2 = (Map<?, ?>) field.get(o);
+                        return map2.values().toArray();
+                }
+
+            }
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+        /**
      *
      * @param field the field that failed the check
      * @param obj needed here to get the class of which it is an instance
