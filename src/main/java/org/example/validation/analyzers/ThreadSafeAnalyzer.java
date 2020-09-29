@@ -12,12 +12,13 @@ import java.lang.reflect.Modifier;
 /**
  * The class checks if the annotated field
  * is thread safe
+ *
+ * <p>BUT! The analyzer checks the field if it belongs
+ * to the package java.util.concurrent or if the field is synchronized
+ * or volatile</p>
+ *
  * @see ThreadSafe
  *
- *
- * BUT! The analyzer checks the field if it belongs
- * to the package java.util.concurrent or if the field is synchronized
- * or volatile
  *
  */
 @AnnotationName(ThreadSafe.class)
@@ -29,8 +30,9 @@ public class ThreadSafeAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @see AnnotationAnalyzer#validate(Field, Object)
-     *
+     * @param f annotated field
+     * @param obj the object of the class that this field belongs to
+     * @return true if field is valid, otherwise false
      */
     @Override
     public boolean validate(Field f, Object obj) {
@@ -85,7 +87,10 @@ public class ThreadSafeAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @see AnnotationAnalyzer#recursive(Object[], String)
+     * @param array an array of objects to be checked recursively
+     *              according to the annotation (for example, array, list, set, or map)
+     * @param name the name of the field required to enter information
+     *             about it and the number of its element in the resulting list in case of failure.
      */
     @Override
     public void recursive(Object[] array, String name) {

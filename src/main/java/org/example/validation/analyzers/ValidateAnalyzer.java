@@ -13,6 +13,8 @@ import java.lang.reflect.Field;
  * This is a parser class that will
  * recursively check not only the
  * object itself, but also its fields.
+ *
+ * @see Validate
  */
 @AnnotationName(Validate.class)
 public class ValidateAnalyzer implements AnnotationAnalyzer{
@@ -21,14 +23,9 @@ public class ValidateAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @param field - class field
-     * @param obj - an object that will give us access to the field value
-     *
-     *
-     * The method will check the fields and,
-     *            if necessary, add errors to the resulting list
-     * @see AnnotationAnalyzer#validate(Field, Object)
-     *
+     * @param field annotated field
+     * @param obj the object of the class that this field belongs to
+     * @return true if no inconsistencies were found at runtime, false otherwise
      */
     @Override
     public boolean validate(Field field, Object obj) {
@@ -77,8 +74,10 @@ public class ValidateAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @see AnnotationAnalyzer#recursive(Object[], String)
-     *
+     * @param array an array of objects to be checked recursively
+     *              according to the annotation (for example, array, list, set, or map)
+     * @param name the name of the field required to enter information
+     *             about it and the number of its element in the resulting list in case of failure.
      */
     @Override
     public void recursive(Object[] array, String name) {

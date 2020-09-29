@@ -24,8 +24,9 @@ public class PhoneNumberAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @see AnnotationAnalyzer#validate(Field, Object)
-     *
+     * @param field annotated field
+     * @param obj the object of the class that this field belongs to
+     * @return true if field is valid, otherwise false
      */
     @Override
     public boolean validate(Field field, Object obj) {
@@ -84,8 +85,10 @@ public class PhoneNumberAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @see AnnotationAnalyzer#recursive(Object[], String)
-     *
+     * @param array an array of objects to be checked recursively
+     *              according to the annotation (for example, array, list, set, or map)
+     * @param name the name of the field required to enter information
+     *             about it and the number of its element in the resulting list in case of failure.
      */
     @Override
     public void recursive(Object[] array, String name) {

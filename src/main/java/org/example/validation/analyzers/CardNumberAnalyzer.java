@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
  * (bank, insurance policy, it doesn't matter) using
  * an algorithm Luna
  * @see CardNumberAnalyzer#algorithmLuna(int[])
+ * @see CardNumber
  */
 
 @AnnotationName(CardNumber.class)
@@ -48,9 +49,9 @@ public class CardNumberAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @param field - class field
-     * @param obj - an object that will give us access to the field value
-     *
+     * @param field annotated field
+     * @param obj the object of the class that this field belongs to
+     * @return true, if field is valid, otherwise false
      * @see AnnotationAnalyzer#validate(Field, Object)
      */
     @Override
@@ -109,8 +110,12 @@ public class CardNumberAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @see AnnotationAnalyzer#recursive(Object[], String)
+     * @param array an array of objects to be checked recursively
+     *              according to the annotation (for example, array, list, set, or map)
+     * @param name the name of the field required to enter information
+     *             about it and the number of its element in the resulting list in case of failure.
      *
+     * @see AnnotationAnalyzer#recursive(Object[], String)
      */
     @Override
     public void recursive(Object[] array, String name) {
@@ -148,8 +153,9 @@ public class CardNumberAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @param cardNumber the string to be tested
-     * @return true, if the string passed the check, false otherwise
+     * @param cardNumber a verification string containing the card number
+     * @return true, if cardNumber is valid, otherwise false
+     *
      */
     private boolean check(String cardNumber) {
 

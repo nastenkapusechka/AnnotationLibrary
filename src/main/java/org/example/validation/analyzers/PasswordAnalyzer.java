@@ -16,6 +16,8 @@ import java.lang.reflect.Field;
  *
  * The password must be a string. It can be any combination of
  * letters, numbers and other characters (ASCII standard)
+ *
+ * @see Password
  */
 @AnnotationName(Password.class)
 public class PasswordAnalyzer implements AnnotationAnalyzer{
@@ -25,8 +27,9 @@ public class PasswordAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @see AnnotationAnalyzer#validate(Field, Object)
-     *
+     * @param field annotated field
+     * @param obj the object of the class that this field belongs to
+     * @return true if field is valid, otherwise false
      */
     @Override
     public boolean validate(Field field, Object obj) {
@@ -80,8 +83,10 @@ public class PasswordAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @see AnnotationAnalyzer#recursive(Object[], String)
-     *
+     * @param array an array of objects to be checked recursively
+     *              according to the annotation (for example, array, list, set, or map)
+     * @param name the name of the field required to enter information
+     *             about it and the number of its element in the resulting list in case of failure.
      */
     @Override
     public void recursive(Object[] array, String name) {
@@ -117,7 +122,8 @@ public class PasswordAnalyzer implements AnnotationAnalyzer{
      * @param password - your password string
      * @return true if password is valid, otherwise false
      *
-     * This method checks if the password is valid
+     * This method checks if the password is valid (it means strong - quantity of
+     * upper letters, lower letters and digits)
      *
      */
     private boolean check(String password) {

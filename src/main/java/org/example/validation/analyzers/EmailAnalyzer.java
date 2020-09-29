@@ -10,6 +10,8 @@ import java.lang.reflect.Field;
 /**
  * this analyzer will check email validity.
  * Email should be string
+ *
+ * @see Email
  */
 
 @AnnotationName(Email.class)
@@ -30,11 +32,11 @@ public class EmailAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @param field - class field
-     * @param obj - an object that will give us access to the field value
-     *
-     * If the field is not validated, the console displays a message
+     * @param field annotated field
+     * @param obj the object of the class that this field belongs to
      * @return true if the field is valid, false otherwise
+     *
+     * @see AnnotationAnalyzer#validate(Field, Object)
      */
 
     @Override
@@ -86,8 +88,10 @@ public class EmailAnalyzer implements AnnotationAnalyzer{
 
     /**
      *
-     * @see AnnotationAnalyzer#recursive(Object[], String)
-     *
+     * @param array an array of objects to be checked recursively
+     *              according to the annotation (for example, array, list, set, or map)
+     * @param name the name of the field required to enter information
+     *             about it and the number of its element in the resulting list in case of failure.
      */
     @Override
     public void recursive(Object[] array, String name) {

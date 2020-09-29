@@ -8,11 +8,14 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 /**
- * @version 1.0 SNAPSHOT
  *
  * Validator.class is the entry point to the library.
  * to use the library you have to call a static method
  * and pass it a class object that will store the annotated fields
+ *
+ * @author nastenka
+ * @version 1.0 SNAPSHOT
+ *
  * @see Validator#validate(Object)
  */
 

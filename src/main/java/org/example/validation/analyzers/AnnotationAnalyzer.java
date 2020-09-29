@@ -1,49 +1,68 @@
 package org.example.validation.analyzers;
 
-import org.example.validation.util.CustomException;
 import org.example.validation.util.MapTarget;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.example.validation.util.MapTarget.KEYS;
-import static org.example.validation.util.MapTarget.VALUES;
-
 /**
- * This interface will be implemented by annotation parsers.
+ *
+ * This is a common interface for analyzers. Each specific
+ * implementation will in its own way check for validity of
+ * fields marked with different annotations
+ *
+ * @see CardNumberAnalyzer
+ * @see EmailAnalyzer
+ * @see NotNullAnalyzer
+ * @see PasswordAnalyzer
+ * @see PhoneNumberAnalyzer
+ * @see ThreadSafeAnalyzer
+ * @see ValidateAnalyzer
+ *
  */
 public interface AnnotationAnalyzer {
-
     /**
      *
-     * @param field - class field
-     * @param obj - an object that will give us access to the field value
+     * @param field annotated field
+     * @param obj the object of the class that this field belongs to
+     * @return True, if the field is valid according to the annotation,
+     * otherwise false
      *
+     * This method checks the validity of a field
+     * marked with one of the library annotations.
      *
-     * The method will check the fields and,
-     *            if necessary, add errors to the resulting list
-     * @see org.example.validation.util.ValidationResult
-     *
-     * @return true if field is valid, otherwise false
      */
     boolean validate(Field field, Object obj);
 
     /**
      *
-     * @param array is an array of objects to be validated
-     * @param place is a field name
+     * @param array an array of objects to be checked recursively
+     *              according to the annotation (for example, array, list, set, or map)
+     * @param name the name of the field required to enter information
+     *             about it and the number of its element in the resulting list in case of failure.
      *
-     *
-     *
-     * If the object is a set or list,
-     *              we recursively check each
-     *              element of that collection.
+     * @see org.example.validation.util.ValidationResult
+     * Results
      *
      */
-    void recursive(Object[] array, String place);
+    void recursive(Object[] array, String name);
 
+    /**
+     *
+     * @param field annotated field
+     * @param o the object of the class that this field belongs to
+     * @param target If the object is a map, this object must be
+     *               marked by MapTarget.KEYS or MapTarget.VALUES
+     *               (that is, according to the annotation, we must
+     *               check either the keys or the values)
+     *
+     * @see MapTarget
+     * @return converted array of objects from collection, list, set or map
+     *
+     *
+     * @see AnnotationAnalyzer#recursive(Object[], String)
+     */
     default Object[] convert (Field field, Object o, MapTarget target) {
 
         try {
@@ -83,13 +102,13 @@ public interface AnnotationAnalyzer {
     }
 
 
-        /**
+    /**
      *
-     * @param field the field that failed the check
-     * @param obj needed here to get the class of which it is an instance
+     * @param field invalid field
+     * @param obj the object of the class that this field belongs to
+     * @return message about a mismatch of a given field in a given class
      *
-     * @return line with coordinates
-     *
+     * @see org.example.validation.util.ValidationResult
      */
     default String printPlace(Field field, Object obj) {
 

@@ -45,8 +45,6 @@ public final class ValidationResult {
      * @param place where non-compliance with the annotation is recorded
      * @param msg non-compliance report
      *
-     *            Inconsistency can be added here
-     *
      */
     public void addError(String place, String msg) {
 
@@ -68,20 +66,12 @@ public final class ValidationResult {
         return list;
     }
 
+    /**
+     * clean the list
+     */
     public void cleanResults() {
 
         this.errors.clear();
-
-    }
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (!(o instanceof ValidationResult)) return false;
-
-        ValidationResult any = (ValidationResult) o;
-
-        return (any.getErrors().size() == errors.size());
 
     }
 
