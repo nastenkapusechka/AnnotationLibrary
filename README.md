@@ -53,15 +53,17 @@
  volatile Map<String, Integer> map;
 
 ```
-В листинге кода можно увидеть [mapTarget](src/main/java/org/example/validation/util/MapTarget.java)
-и [threadTarget](src/main/java/org/example/validation/util/ThreadTarget.java) - это перечисления-метки;  
+В листинге кода можно увидеть [mapTarget](src/main/java/com/nastenkapusechka/validation/util/MapTarget.java)
+и [threadTarget](src/main/java/com/nastenkapusechka/validation/util/ThreadTarget.java) - это перечисления-метки;  
 первые используются для того, чтобы указать аннотации (если вы вдруг пометили карту), 
 что следует проверять - ключи, или значения, вторые же используются
 для того, чтобы указать аннотации, проверяющей коллекцию, карту или массив - следует проверять лишь сам массив/коллекцию/карту, 
 или каждый его элемент включительно.(Относится только к аннотации @ThreadSafe)  
 >По умолчанию mapTarget и threadTarget стоят MapTarget.UNKNOWN и 
->ThreadTarget.ONLY_FIELD
-    
+>ThreadTarget.ONLY_FIELD  
+
+
+*Настоятельно рекомендуем использовать тип String для полей*
     
     
 #### Небольшой туториал : how to use Annotation Library
@@ -91,7 +93,7 @@ public Test(String password, List<String> phoneNumbers, Object... objects) {
 ```
 Для того, чтобы получить результаты валидации этих полей, следует применить
 один-единственный метод `validate(Object o)` и передать в его параметр
-экземпляр этого класса. Он вернет список:
+экземпляр этого класса:
 ```
 class Main {
     public static void main(String[] args) {
@@ -100,18 +102,14 @@ class Main {
                 new ArrayList<>(Arrays.asList("8-926-123-45-67", "123-45-67")),
                 "not null obj", null, "some str");
 
-        Validator.validate(test).forEach(System.out::println);
+        Validator.validate(test);
 
     }
 }
 ```
-**Output:**
+**Если что-то пойдет не так, компилятор выбросит исключение:**
 ```
-Place of inconsistency: Field: objects element #2 Message: is null --- 11:43
-Place of inconsistency: Class: Test field: objects Message: Doesn't match annotation @NotNull --- 11:43
-Place of inconsistency: Class: Test field: password Message: Doesn't match annotation @Password --- 11:43
-Place of inconsistency: Field: phoneNumbers element #2 Message: is not a phone number --- 11:43
-Place of inconsistency: Class: Test field: phoneNumbers Message: Doesn't match annotation @PhoneNumber --- 11:43
+Exception in thread "main" java.lang.NullPointerException: Field: objects element #2 is null
 ```
 
 Вот и все) 
