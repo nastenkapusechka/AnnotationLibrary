@@ -103,10 +103,8 @@ public class EmailAnalyzer implements AnnotationAnalyzer{
 
             email = (String) array[0];
             res = email.matches(regex);
-        }
 
-        //if (email == null) throw new NullPointerException(place + msg);
-
+        } else if (array[0] == null) throw new NullPointerException();
 
         if (!res) throw new EmailException(place + msg);
 
