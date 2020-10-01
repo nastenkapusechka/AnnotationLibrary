@@ -7,6 +7,8 @@
 * @CardNumber
     * Проверяет поле, содержащее номер карточки (страховки, 
     банковской карты и т.д.) на валидность по алгоритму Луна  
+    
+    
 ```
 Public class Test {
   
@@ -19,8 +21,12 @@ Public class Test {
   }
 ```
     
+    
+    
 * @Email 
     * Проверяет email/rambler/gmail и т.д. на валидность  
+    
+    
 ```
 public class Test {
      
@@ -32,9 +38,13 @@ public class Test {
      
  }
 ```
+
+
     
 * @NotNull
     * Проверяет, что поле не пустое  
+    
+    
 ```
 public class Test {
      
@@ -47,11 +57,14 @@ public class Test {
  }
 ```
      
+     
 * @Password
     * Валидность пароля. Пароль считается корректным,
     когда содержит не менее восьми символов, включая как минимум
     одну цифру и одну заглавную букву, и не совпадает с такими
     распространенными паролями, как, например _"Qwerty123"_  
+    
+    
 ```
 public class Test {
    
@@ -64,8 +77,11 @@ public class Test {
 }
 ```
     
+    
 * @PhoneNumber
     * Проверка валидности номера по международному формату  
+    
+    
 ```
 public class Test {
 
@@ -78,9 +94,12 @@ public class Test {
 
 }
 ```
+
     
 * @ThreadSafe
     * Эта аннотация оценивает, потокобезопасно ли поле  
+    
+    
 ```
 public class Test {
 
@@ -93,11 +112,14 @@ public class Test {
 }
 ```
     
+    
 * @Validate
     * Аннотация указывает, что следует проверить не только 
     само поле, но и его содержимое, если это, например,
     экземпляр какого-то класса, поля которого содержат другие
     аннотации для валидации их значений  
+    
+    
 ```
 public class Test {
     
@@ -122,6 +144,8 @@ public class Test {
     
     
 **Так же, можно аннотировать коллекции, массивы, карты:**
+
+
 ```
  @CardNumber
  List<String> numbers; 
@@ -133,6 +157,7 @@ public class Test {
  volatile Map<String, Integer> map;
 
 ```
+
 В листинге кода можно увидеть [mapTarget](src/main/java/com/nastenkapusechka/validation/util/MapTarget.java)
 и [threadTarget](src/main/java/com/nastenkapusechka/validation/util/ThreadTarget.java) - это перечисления-метки;  
 первые используются для того, чтобы указать аннотации (если вы вдруг пометили карту), 
