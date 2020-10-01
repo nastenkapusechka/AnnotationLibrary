@@ -197,6 +197,3 @@ Exception in thread "main" java.lang.NullPointerException: Field: objects elemen
 ```
 
 Вот и все) 
- 
-[Здесь](javadocs/overview-summary.html) можно перейти на главную
-страницу документации
