@@ -93,20 +93,19 @@ public class EmailAnalyzer implements AnnotationAnalyzer{
 
         String place = "Field: " + name + " element #" + countIndex + " ";
         String msg = "is not email";
-        boolean res;
+        boolean res = false;
 
         if (array.length == 0) return;
 
-        String email = null;
+        String email;
 
         if (array[0] instanceof String) {
 
             email = (String) array[0];
-        }
+            res = email.matches(regex);
 
-        if (email == null) throw new NullPointerException(place + msg);
+        } else if (array[0] == null) throw new NullPointerException(place + msg);
 
-        res = email.matches(regex);
 
         if (!res) throw new EmailException(place + msg);
 
