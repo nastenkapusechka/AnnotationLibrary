@@ -196,4 +196,5 @@ class Main {
 Exception in thread "main" java.lang.NullPointerException: Field: objects element #2 is null
 ```
 
-Вот и все) 
+Вот и все)   
+_Посмотреть **мини-сайт** и **документацию** можно [здесь]( https://nastenkapusechka.github.io/validate/)_
