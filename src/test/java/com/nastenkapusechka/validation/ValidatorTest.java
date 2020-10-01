@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class ValidatorTest {
 
     static class PlugClass {
@@ -48,7 +46,7 @@ public class ValidatorTest {
         }
     }
 
-    @Test(timeout = 100)
+    @Test(timeout = 200)
     public void validateGood() throws Exception {
 
         PlugClass cls = new PlugClass(new ArrayList<>(Arrays.asList("(495)1234567",
