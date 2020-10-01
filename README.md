@@ -197,4 +197,4 @@ Exception in thread "main" java.lang.NullPointerException: Field: objects elemen
 ```
 
 Вот и все)   
-_Посмотреть **мини-сайт** и **документацию** можно [здесь]( https://nastenkapusechka.github.io/validate/)_
+_Посмотреть [мини-сайт](https://nastenkapusechka.github.io/validate/) и [документацию](https://nastenkapusechka.github.io/validate/javadocs/overview-summary.html)_
